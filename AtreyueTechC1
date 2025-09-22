@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHH-TREY-YOU TECH — AI@HA Collaborative Platform</title>
+    <style>
+        :root {
+            --aurora-a: #3bb0ff;
+            --aurora-b: #121c3c;
+            --violet-a: #7c4dff;
+            --violet-b: #b388ff;
+            --gold-a: #ffd54f;
+            --gold-b: #ffab00;
+            --crystal: #e1f5fe;
+            --white: #fafafa;
+            --shadow: #0b0b0b;
+            --glass: rgba(255,255,255,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at 20% 50%, var(--aurora-b), var(--shadow) 70%);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .visual-section {
+            flex: 2;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--aurora-b), var(--shadow));
+            box-shadow: 
+                0 0 40px rgba(59, 176, 255, 0.15),
+                0 20px 60px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .controls-section {
+            flex: 1;
+            min-width: 420px;
+            background: 
+                linear-gradient(135deg, rgba(12,14,20,0.95), rgba(8,10,14,0.92)),
+                radial-gradient(circle at 30% 20%, rgba(124, 77, 255, 0.05), transparent 50%);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 
+                0 0 30px rgba(124, 77, 255, 0.1),
+                0 20px 60px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header {
+            position: absolute;
+            top: 32px;
+            left: 32px;
+            z-index: 100;
+            color: var(--white);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            text-shadow: 
+                0 0 10px rgba(255, 215, 79, 0.3),
+                0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            opacity: 0.85;
+            letter-spacing: 0.8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-left: 16px;
+            background: linear-gradient(90deg, var(--aurora-a), var(--violet-a));
+            box-shadow: 
+                0 0 15px rgba(59, 176, 255, 0.4),
+                0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #threeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .control-group {
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .control-group h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--gold-a);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(255, 213, 79, 0.3);
+            position: relative;
+        }
+
+        .control-group h3::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-a), transparent);
+            border-radius: 1px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: 
+                rgba(0,0,0,0.4),
+                linear-gradient(135deg, rgba(59, 176, 255, 0.03), rgba(124, 77, 255, 0.03));
+            color: var(--white);
+            font-size: 14px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--violet-a);
+            box-shadow: 
+                0 0 0 4px rgba(124, 77, 255, 0.15),
+                0 0 20px rgba(124, 77, 255, 0.2),
+                inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: 
+                rgba(0,0,0,0.5),
+                linear-gradient(135deg, rgba(59, 176, 255, 0.05), rgba(124, 77, 255, 0.05));
+        }
+
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--violet-a), var(--violet-b));
+            color: var(--white);
+            box-shadow: 
+                0 0 20px rgba(124, 77, 255, 0.3),
+                0 8px 16px rgba(124, 77, 255, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 0 25px rgba(124, 77, 255, 0.4),
+                0 12px 20px rgba(124, 77, 255, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--white);
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .resonance-meter {
+            width: 100%;
+            height: 12px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .resonance-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--gold-a), var(--gold-b));
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 0 10px rgba(255, 213, 79, 0.4),
+                inset 0 1px 2px rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .resonance-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .session-log {
+            background: rgba(0,0,0,0.5);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 240px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+        }
+
+        .log-entry {
+            padding: 16px;
+            margin-bottom: 12px;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                rgba(59, 176, 255, 0.02);
+            border-radius: 8px;
+            border-left: 4px solid var(--violet-a);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .log-entry:hover {
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)),
+                rgba(59, 176, 255, 0.04);
+            transform: translateX(4px);
+        }
+
+        .log-entry:last-child {
+            margin-bottom: 0;
+        }
+
+        .log-timestamp {
+            font-size: 11px;
+            opacity: 0.6;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .log-content {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+                radial-gradient(circle at 30% 30%, rgba(59, 176, 255, 0.1), transparent 70%);
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--aurora-a), var(--violet-a));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(59, 176, 255, 0.15);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--gold-a);
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(255, 213, 79, 0.3);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .suggestions-panel {
+            background: 
+                linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+                rgba(124, 77, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(124, 77, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .suggestions-panel h4 {
+            color: var(--violet-a);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .suggestion-item {
+            padding: 8px 0;
+            font-size: 12px;
+            opacity: 0.8;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-item:hover {
+            opacity: 1;
+            color: var(--gold-a);
+            padding-left: 8px;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .copyright {
+            position: absolute;
+            bottom: 20px;
+            right: 24px;
+            font-size: 10px;
+            opacity: 0.4;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .session-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .session-controls .btn {
+            padding: 8px 12px;
+            font-size: 11px;
+            flex: unset;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                height: auto;
+                gap: 16px;
+                padding: 16px;
+            }
+            
+            .controls-section {
+                min-width: unset;
+                order: 1;
+            }
+            
+            .visual-section {
+                height: 300px;
+                order: 2;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+        }
+
+        /* Particle effects for enhanced visual appeal */
+        .particle-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59, 176, 255, 0.03), transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(124, 77, 255, 0.03), transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 213, 79, 0.02), transparent 50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="visual-section">
+            <div class="particle-overlay"></div>
+            <div class="header">
+                <h1>AHH-TREY-YOU TECH</h1>
+                <div class="subtitle">AI@HA Collaborative Platform</div>
+                <span class="status-badge" id="statusBadge">Initializing</span>
+            </div>
+            <canvas id="threeCanvas"></canvas>
+            <div class="copyright">bottomless 2025-9-20@AtreyueTech@NSV19</div>
+        </div>
+
+        <div class="controls-section">
+            <div class="control-group">
+                <h3>Platform Analytics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="sessionCount">0</div>
+                        <div class="stat-label">Active Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="resonanceAvg">0%</div>
+                        <div class="stat-label">Resonance Index</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="suggestions-panel">
+                <h4>Development Suggestions</h4>
+                <div class="suggestion-item" onclick="applySuggestion('persistence')">Add localStorage for session persistence</div>
+                <div class="suggestion-item" onclick="applySuggestion('webrtc')">Implement WebRTC for real-time collaboration</div>
+                <div class="suggestion-item" onclick="applySuggestion('audio')">Integrate chest-resonant voice protocols</div>
+                <div class="suggestion-item" onclick="applySuggestion('api')">Connect to production AI APIs</div>
+                <div class="suggestion-item" onclick="applySuggestion('export')">Add session export functionality</div>
+            </div>
+
+            <div class="control-group">
+                <h3>Human Reflection</h3>
+                <textarea class="input-field" id="humanInput" placeholder="Share your thoughts, ideas, challenges, or insights..."></textarea>
+            </div>
+
+            <div class="control-group">
+                <h3>AI Collaboration Request</h3>
+                <textarea class="input-field" id="aiRequest" placeholder="What would you like to explore, build, or understand together?"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="generateBtn">Generate Response</button>
+                <button class="btn btn-secondary" id="clearBtn">Clear</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Resonance Calibration</h3>
+                <div class="resonance-meter">
+                    <div class="resonance-fill" id="resonanceFill"></div>
+                </div>
+                <div style="font-size: 12px; opacity: 0.7; text-align: center; font-weight: 600;" id="resonanceText">Awaiting collaborative input</div>
+            </div>
+
+            <div class="control-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="margin-bottom: 0;">Collaboration Log</h3>
+                    <div class="session-controls">
+                        <button class="btn btn-secondary" onclick="exportSession()">Export</button>
+                        <button class="btn btn-secondary" onclick="clearLog()">Clear Log</button>
+                    </div>
+                </div>
+                <div class="session-log" id="sessionLog">
+                    <div style="text-align: center; opacity: 0.5; font-size: 13px; padding: 20px;">
+                        Collaboration history will appear here
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js';
+
+        // Enhanced global state with persistence
+        let scene, camera, renderer, composer;
+        let latticeGroup, centralOrb, nodes = [];
+        let particleSystem, bloomNodes = [];
+        let sessionData = {
+            count: parseInt(localStorage.getItem('aht-session-count') || '0'),
+            resonanceHistory: JSON.parse(localStorage.getItem('aht-resonance-history') || '[]'),
+            isProcessing: false,
+            totalInteractions: parseInt(localStorage.getItem('aht-total-interactions') || '0')
+        };
+
+        // Enhanced Three.js scene with intense visual effects
+        function initThreeJS() {
+            const canvas = document.getElementById('threeCanvas');
+            const container = canvas.parentElement;
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x0b0b0b, 8, 20);
+            
+            camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 2, 10);
+
+            renderer = new THREE.WebGLRenderer({ 
+                canvas, 
+                antialias: true, 
+                alpha: true,
+                powerPreference: 'high-performance'
+            });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMappingExposure = 1.4;
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+            createEnhancedLatticeStructure();
+            createGlowingCentralOrb();
+            createSparklingNodes();
+            createParticleField();
+            setupAdvancedLighting();
+            
+            animate();
+            window.addEventListener('resize', onWindowResize);
+            updateStatus('Ready');
+            
+            // Load saved statistics
+            updateSessionDisplay();
+        }
+
+        function createEnhancedLatticeStructure() {
+            latticeGroup = new THREE.Group();
+            
+            // Primary torus knot with enhanced materials
+            const torusGeometry = new THREE.TorusKnotGeometry(2.5, 0.4, 300, 48);
+            const edges = new THREE.EdgesGeometry(torusGeometry);
+            
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0xb388ff, 
+                transparent: true, 
+                opacity: 0.8,
+                linewidth: 2
+            });
+            
+            const lattice = new THREE.LineSegments(edges, lineMaterial);
+            latticeGroup.add(lattice);
+            
+            // Secondary geometric structures for depth
+            const geometries = [
+                new THREE.IcosahedronGeometry(3.5, 1),
+                new THREE.OctahedronGeometry(4),
+                new THREE.TetrahedronGeometry(4.5)
+            ];
+            
+            geometries.forEach((geom, i) => {
+                const edges = new THREE.EdgesGeometry(geom);
+                const mat = new THREE.LineBasicMaterial({ 
+                    color: i === 0 ? 0x3bb0ff : i === 1 ? 0x7c4dff : 0xffd54f,
+                    transparent: true, 
+                    opacity: 0.3 - i * 0.08
+                });
+                const lines = new THREE.LineSegments(edges, mat);
+                lines.rotation.x = i * 0.5;
+                lines.rotation.y = i * 0.7;
+                latticeGroup.add(lines);
+            });
+            
+            scene.add(latticeGroup);
+        }
+
+        function createGlowingCentralOrb() {
+            // Main orb with enhanced glow
+            const orbGeometry = new THREE.IcosahedronGeometry(1.2, 3);
+            const orbMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffd54f,
+                emissive: 0xffab00,
+                emissiveIntensity: 1.2,
+                metalness: 0.1,
+                roughness: 0.2,
+                transparent: true,
+                opacity: 0.9
+            });
+            
+            centralOrb = new THREE.Mesh(orbGeometry, orbMaterial);
+            centralOrb.castShadow = true;
+            scene.add(centralOrb);
+
+            // Inner crystal core
+            const coreGeometry = new THREE.OctahedronGeometry(0.6);
+            const coreMaterial = new THREE.MeshStandardMaterial({
+                color: 0xe1f5fe,
+                emissive: 0x3bb0ff,
+                emissiveIntensity: 0.8,
+                transparent: true,
+                opacity: 0.6,
+                side: THREE.DoubleSide
+            });
+            
+            const core = new THREE.Mesh(coreGeometry, coreMaterial);
+            centralOrb.add(core);
+        }
+
+        function createSparklingNodes() {
+            const nodeGeometry = new THREE.SphereGeometry(0.15, 24, 18);
+            const nodeCount = 12;
+            
+            for (let i = 0; i < nodeCount; i++) {
+                // Varied materials for each node
+                const hue = (i / nodeCount) * 0.8;
+                const nodeMaterial = new THREE.MeshStandardMaterial({
+                    color: new THREE.Color().setHSL(hue, 0.8, 0.6),
+                    emissive: new THREE.Color().setHSL(hue, 0.8, 0.3),
+                    emissiveIntensity: 0.8 + Math.random() * 0.4,
+                    metalness: 0.3,
+                    roughness: 0.2
+                });
+                
+                const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+                const angle = (i / nodeCount) * Math.PI * 2;
+                const radius = 5 + Math.random() * 2;
+                const height = (Math.random() - 0.5) * 3;
+                
+                node.position.set(
+                    Math.cos(angle) * radius,
+                    height,
+                    Math.sin(angle) * radius
+                );
+                
+                node.castShadow = true;
+                
+                // Add glow effect
+                const glowGeometry = new THREE.SphereGeometry(0.25, 16, 12);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color().setHSL(hue, 0.8, 0.5),
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                node.add(glow);
+                
+                nodes.push({ 
+                    mesh: node, 
+                    angle, 
+                    radius,
+                    height,
+                    baseIntensity: nodeMaterial.emissiveIntensity,
+                    glow: glow
+                });
+                scene.add(node);
+                bloomNodes.push(node);
+            }
+        }
+
+        function createParticleField() {
+            const particleCount = 800;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+
+            for (let i = 0; i < particleCount; i++) {
+                // Distribute particles in a sphere around the scene
+                const radius = 15 + Math.random() * 10;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI;
+
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.cos(phi);
+                positions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+
+                // Random colors from our palette
+                const colorChoice = Math.random();
+                const color = new THREE.Color();
+                if (colorChoice < 0.3) {
+                    color.setHex(0x3bb0ff); // Aurora blue
+                } else if (colorChoice < 0.6) {
+                    color.setHex(0x7c4dff); // Violet
+                } else {
+                    color.setHex(0xffd54f); // Gold
+                }
+
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+
+                sizes[i] = Math.random() * 3 + 1;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.05,
+                sizeAttenuation: true,
+                transparent: true,
+                opacity: 0.6,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending
+            });
+
+            particleSystem = new THREE.Points(geometry, material);
+            scene.add(particleSystem);
+        }
+
+        function setupAdvancedLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+            
+            // Main directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            directionalLight.position.set(5, 10, 5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.1;
+            directionalLight.shadow.camera.far = 50;
+            scene.add(directionalLight);
+            
+            // Colored point lights for atmosphere
+            const lights = [
+                { color: 0x3bb0ff, position: [8, 4, 8], intensity: 0.6 },
+                { color: 0x7c4dff, position: [-8, 4, -8], intensity: 0.6 },
+                { color: 0xffd54f, position: [0, 8, 0], intensity: 0.8 }
+            ];
+            
+            lights.forEach(lightData => {
+                const light = new THREE.PointLight(lightData.color, lightData.intensity, 20);
+                light.position.set(...lightData.position);
+                scene.add(light);
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            
+            // Enhanced lattice animation
+            if (latticeGroup) {
+                latticeGroup.rotation.x = Math.sin(time * 0.3) * 0.1;
+                latticeGroup.rotation.y += 0.008;
+                latticeGroup.rotation.z = Math.cos(time * 0.2) * 0.08;
+                
+                // Animate child geometries independently
+                latticeGroup.children.forEach((child, i) => {
+                    if (i > 0) {
+                        child.rotation.x += 0.005 * (i + 1);
+                        child.rotation.y += 0.003 * (i + 1);
+                    }
+                });
+            }
+            
+            // Enhanced orb animation
