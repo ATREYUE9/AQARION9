@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atreyue Tech - AI@HA Collaborative Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three-stdlib@2.14.0/utils/BufferGeometryUtils.js"></script>
+    <style>
+        :root {
+            /* Core Color Palette - Refined */
+            --aurora-a: #3bb0ff;        /* Bright Cyan */
+            --aurora-b: #0077c2;        /* Deep Sky Blue */
+            --violet-a: #7c4dff;        /* Medium Violet */
+            --violet-b: #b388ff;        /* Light Violet */
+            --gold-a: #ffd54f;          /* Bright Gold */
+            --gold-b: #ffab00;          /* Deep Orange Gold */
+            --deep-gold: #b8860b;       /* Darker Goldenrod */
+            --seafoam-a: #00e676;       /* Bright Green */
+            --seafoam-b: #00bfa5;       /* Teal Green */
+            --crystal: #e1f5fe;         /* Light Blue White */
+            --white: #fafafa;
+            --dark-bg: #010418;         /* Even deeper, darker blue background */
+            --darker-bg: #00020a;       /* Almost black for furthest depth */
+
+            /* Glassmorphism and Shadow Effects */
+            --glass-bg: rgba(255, 255, 255, 0.05); /* More transparent for depth */
+            --glass-border: rgba(255, 255, 255, 0.1); /* Subtle border */
+            --shadow-glow: 0 0 50px rgba(0, 191, 255, 0.3); /* Enhanced blue glow */
+            --deep-shadow: rgba(0, 0, 0, 0.8); /* Stronger shadow */
+        }
+
+        @keyframes cosmic-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 20% 50%, var(--aurora-b) 5%, var(--dark-bg) 40%, var(--darker-bg) 90%);
+            background-size: 200% 200%;
+            animation: cosmic-flow 40s ease-in-out infinite alternate;
+            color: var(--white);
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-container {
+            display: flex;
+            height: 95%;
+            width: 95%;
+            max-width: 1400px;
+            max-height: 900px;
+            gap: 20px;
+            perspective: 1000px;
+        }
+
+        .visual-section {
+            flex: 2;
+            border-radius: 20px;
+            background: var(--dark-bg);
+            box-shadow: 0 10px 80px var(--deep-shadow), inset 0 1px 0 rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+
+        .controls-section {
+            flex: 1;
+            min-width: 420px;
+            background: var(--glass-bg);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 60px var(--deep-shadow), var(--shadow-glow);
+            transition: all 0.4s ease;
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+        
+        /* ... All other CSS from the previous response remains unchanged ... */
+
+        .header {
+            position: absolute;
+            top: 32px;
+            left: 32px;
+            z-index: 100;
+            color: var(--white);
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 48px; /* Larger title */
+            text-shadow: 0 0 35px var(--gold-a), 0 0 15px var(--seafoam-b), 0 6px 10px var(--deep-shadow);
+        }
+
+        .header .subtitle {
+            font-size: 18px; /* Slightly larger */
+            opacity: 0.95;
+            text-shadow: 0 1px 3px var(--deep-shadow);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 32px;
+            right: 32px;
+            background: linear-gradient(135deg, var(--seafoam-a), var(--aurora-a));
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            animation: pulse 3s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.4), 0 6px 15px var(--deep-shadow);
+        }
+        .status-badge:hover {
+            box-shadow: 0 0 25px rgba(0, 230, 118, 0.6), 0 8px 18px var(--deep-shadow);
+        }
+
+        #threeCanvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+        }
+        
+        .control-group h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--gold-a);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 213, 79, 0.4);
+        }
+
+        .control-group h3::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold-a), transparent);
+            margin-top: 8px;
+        }
+        .input-field {
+            width: 100%;
+            min-height: 100px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.5);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--seafoam-a);
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow:
+                0 0 0 5px rgba(0, 230, 118, 0.15),
+                0 0 30px rgba(0, 230, 118, 0.25),
+                inset 0 3px 8px rgba(0,0,0,0.6);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--violet-a), var(--violet-b));
+            color: var(--white);
+            box-shadow: 0 0 25px rgba(124, 77, 255, 0.35), 0 10px 20px var(--deep-shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(124, 77, 255, 0.5), 0 15px 25px var(--deep-shadow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--crystal);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 5px 10px var(--deep-shadow);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 15px var(--deep-shadow);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)), radial-gradient(circle at 30% 30%, rgba(0, 230, 118, 0.08), transparent 70%);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--seafoam-a), var(--violet-a));
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+        .stat-card:hover {
+            box-shadow: 0 10px 30px rgba(0, 230, 118, 0.2);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--gold-a);
+            margin-bottom: 4px;
+            text-shadow: 0 0 12px rgba(255, 213, 79, 0.4);
+        }
+
+        .resonance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--seafoam-a), var(--gold-a));
+            border-radius: 6px;
+            transition: width 1s ease;
+            box-shadow: 0 0 12px rgba(0, 230, 118, 0.4), inset 0 2px 3px rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        .resonance-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            opacity: 0.5;
+            animation: shimmer 2s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .suggestions-panel h4 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--violet-a);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .suggestion-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            color: var(--crystal);
+        }
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--aurora-a);
+            color: var(--seafoam-a);
+        }
+        .log-entry {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)), rgba(0, 230, 118, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 4px solid var(--seafoam-a);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .log-entry:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)), rgba(0, 230, 118, 0.03);
+            border-color: var(--seafoam-a);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="visual-section">
+            <header class="header">
+                <h1>Atreyue Tech</h1>
+                <div class="subtitle">AI@HA Collaborative Platform</div>
+                <span class="status-badge" id="status">Initializing</span>
+            </header>
+            <canvas id="threeCanvas"></canvas>
+        </div>
+
+        <div class="controls-section">
+            <div class="control-group">
+                <h3>Human Axiom Input</h3>
+                <textarea
+                    id="humanInput"
+                    class="input-field"
+                    placeholder="Type your axiom, thought, or inquiry here..."
+                ></textarea>
+            </div>
+            
+            <div class="control-group">
+                <h3>Audio Preferences</h3>
+                <select id="interactionTone" class="input-field" style="min-height: auto; padding: 10px;">
+                    <option value="Chakra">Chakra Resonance</option>
+                    <option value="Digital">Digital Pulse</option>
+                    <option value="Ethereal">Ethereal Swell</option>
+                </select>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="processBtn">
+                    Process Axiom
+                </button>
+                <button class="btn btn-secondary" id="restartBtn">
+                    Restart
+                </button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="sessionCount">0</div>
+                    <div class="stat-label">Total Axioms Processed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="resonanceAvg">0%</div>
+                    <div class="stat-label">Avg. Resonance</div>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Quantum Resonance</h3>
+                <div class="resonance-meter">
+                    <div class="resonance-fill" id="resonanceFill" style="width: 50%;"></div>
+                </div>
+                <div class="resonance-text" id="resonanceText">
+                    Awaiting collaborative input
+                </div>
+            </div>
+
+            <div class="suggestions-panel">
+                <h4>Suggested Axioms</h4>
+                <div id="suggestions">
+                    <div class="suggestion-item" onclick="setSuggestion(this.textContent)">
+                        What is the nature of consciousness?
+                    </div>
+                    <div class="suggestion-item" onclick="setSuggestion(this.textContent)">
+                        How do quantum fields influence reality?
+                    </div>
+                    <div class="suggestion-item" onclick="setSuggestion(this.textContent)">
+                        Can AI and human intelligence truly merge?
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-group" style="flex-grow: 1;">
+                <h3>Session Log</h3>
+                <div class="session-log" id="sessionLog">
+                    </div>
+            </div>
+            
+            <div class="copyright">© 2025 Atreyue Tech. All Rights Reserved.</div>
+        </div>
+    </div>
+
+    <script>
+        // Custom Shader for glowing orb
+        const glowShader = {
+            uniforms: {
+                'c': { type: 'f', value: 0.1 },
+                'p': { type: 'f', value: 1.4 },
+                glowColor: { type: 'c', value: new THREE.Color(0x00bfff) },
+                viewVector: { type: 'v3', value: new THREE.Vector3(0, 0, 0) }
+            },
+            vertexShader: `
+                uniform vec3 viewVector;
+                uniform float c;
+                uniform float p;
+                varying float intensity;
+                void main() {
+                    vec3 vNormal = normalize( normalMatrix * normal );
+                    vec3 vNormel = normalize( normalMatrix * viewVector );
+                    intensity = pow( c - dot(vNormal, vNormel), p );
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 glowColor;
+                varying float intensity;
+                void main() {
+                    vec3 glow = glowColor * intensity;
+                    gl_FragColor = vec4( glow, 1.0 );
+                }
+            `
+        };
+
+        // Unified Field Coordinator class
+        class UnifiedFieldCoordinator {
+            constructor() {
+                this.nodes = [];
+                this.resonanceHistory = [];
+                this.totalProcessed = 0;
+            }
+            registerNode(node) { this.nodes.push(node); }
+            async processRequest(input) {
+                const promises = this.nodes.map(node => node.process(input));
+                const results = await Promise.all(promises);
+                const finalResonance = results.reduce((acc, curr) => acc + curr, 0) / results.length;
+                this.resonanceHistory.push(finalResonance);
+                this.totalProcessed++;
+                const responses = ["The unified field resonates with infinite possibility.", "Quantum coherence achieved.", "Reality shifts as new axioms emerge."];
+                return {
+                    timestamp: Date.now(), humanInput: input, aiResponse: responses[Math.floor(Math.random() * responses.length)],
+                    finalResonance, axiomShift: "Manifesting new dimensional pathways..."
+                };
+            }
+            getNetworkMetrics() {
+                const total = this.resonanceHistory.length;
+                const avg = total > 0 ? this.resonanceHistory.reduce((sum, val) => sum + val, 0) / total : 0;
+                let status = "Awaiting collaborative input";
+                if (avg > 80) status = "True Quantum Resonance achieved"; else if (avg > 60) status = "Harmonic state emerging"; else if (avg > 40) status = "Field is stable";
+                return { resonanceAvg: avg, totalProcessed: this.totalProcessed, resonanceStatus: status };
+            }
+            restartSession() { this.resonanceHistory = []; this.totalProcessed = 0; }
+        }
+
+        class EnhancedAISource {
+            constructor(name) { this.name = name; }
+            async process(input) {
+                await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1500));
+                return 50 + Math.random() * 50;
+            }
+            getResonance() { return Math.random() * 100; }
+        }
+
+        // Chakra frequencies
+        const CHAKRA_FREQUENCIES = [
+            { name: "Root", freq: 396 }, { name: "Sacral", freq: 417 }, { name: "Solar Plexus", freq: 528 },
+            { name: "Heart", freq: 639 }, { name: "Throat", freq: 741 }, { name: "Third Eye", freq: 852 },
+            { name: "Crown", freq: 963 }, { name: "Soul Star", freq: 1056 }, { name: "Earth Star", freq: 68 }
+        ];
+
+        // Main application state
+        let ufc, scene, camera, renderer, centralOrb, freeloadingNodes = [], log = [], expandedLog = null;
+        let audioContext, ambientGainNode, chakraOscillators = [];
+        let fixedNodes = []; // New array for fixed nodes
+
+        // Main initialization function
+        function init() {
+            ufc = new UnifiedFieldCoordinator();
+            for (let i = 0; i < 4; i++) {
+                ufc.registerNode(new EnhancedAISource(`NODE-${i}`));
+            }
+            initThreeJS();
+            initAudio();
+            setupEventListeners();
+            animate();
+            document.getElementById('status').textContent = 'Active';
+        }
+
+        function initThreeJS() {
+            const canvas = document.getElementById('threeCanvas');
+            const container = canvas.parentElement;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x010418, 1, 30);
+            camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+            camera.position.set(0, 3, 15);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            createEnhancedCentralOrb();
+            createDynamicNeuralNetwork();
+            setupLighting();
+            addParticles();
+            window.addEventListener('resize', () => {
+                const w = container.clientWidth, h = container.clientHeight;
+                camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+            });
+        }
+        
+        function createEnhancedCentralOrb() {
+            const geometry = new THREE.IcosahedronGeometry(2.5, 5);
+            const coreMaterial = new THREE.MeshStandardMaterial({
+                color: new THREE.Color('#7c4dff'), emissive: new THREE.Color('#b388ff'), emissiveIntensity: 2.5, metalness: 0.9, roughness: 0.1
+            });
+            const coreMesh = new THREE.Mesh(geometry, coreMaterial);
+            
+            const auraMaterial = new THREE.ShaderMaterial({
+                uniforms: THREE.UniformsUtils.merge([
+                    glowShader.uniforms,
+                    { glowColor: { value: new THREE.Color('#00bfff') } }
+                ]),
+                vertexShader: glowShader.vertexShader, fragmentShader: glowShader.fragmentShader,
+                side: THREE.BackSide, blending: THREE.AdditiveBlending, transparent: true
+            });
+            const auraMesh = new THREE.Mesh(geometry.clone().scale(1.2, 1.2, 1.2), auraMaterial);
+            
+            centralOrb = new THREE.Group();
+            centralOrb.add(coreMesh);
+            centralOrb.add(auraMesh);
+            scene.add(centralOrb);
+        }
+
+        function createDynamicNeuralNetwork() {
+            const networkGroup = new THREE.Group();
+            const nodeCount = 100;
+            const radius = 10;
+            const networkNodes = [];
+            for (let i = 0; i < nodeCount; i++) {
+                const phi = Math.acos(1 - 2 * i / nodeCount);
+                const theta = Math.sqrt(nodeCount * Math.PI) * phi;
+                const x = radius * Math.cos(theta) * Math.sin(phi);
+                const y = radius * Math.sin(theta) * Math.sin(phi);
+                const z = radius * Math.cos(phi);
+                networkNodes.push(new THREE.Vector3(x, y, z));
+            }
+            
+            // Fixed Nodes
+            const fixedNodeGeo = new THREE.SphereGeometry(0.5, 16, 16);
+            const fixedNodeMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#8b6e3f'), emissive: new THREE.Color('#b8860b'), emissiveIntensity: 0.8, metalness: 0.7, roughness: 0.3 });
+            for (let i = 0; i < 8; i++) {
+                const node = new THREE.Mesh(fixedNodeGeo, fixedNodeMat);
+                node.position.copy(networkNodes[Math.floor(Math.random() * nodeCount)]);
+                networkGroup.add(node);
+                fixedNodes.push(node);
+            }
+            
+            // Freeloading Nodes
+            const freeloadingNodeGeo = new THREE.SphereGeometry(0.2, 8, 8);
+            const freeloadingNodeMat = new THREE.MeshStandardMaterial({ color: new THREE.Color('#ffd54f'), emissive: new THREE.Color('#ffab00'), emissiveIntensity: 1.5, metalness: 0.5, roughness: 0.5 });
+            for (let i = 0; i < 50; i++) {
+                const node = new THREE.Mesh(freeloadingNodeGeo, freeloadingNodeMat);
+                node.position.copy(networkNodes[Math.floor(Math.random() * nodeCount)]);
+                networkGroup.add(node);
+                freeloadingNodes.push(node);
+            }
+
+            // Connections
+            const lineGeo = new THREE.BufferGeometry();
+            const positions = [], colors = [];
+            const colorA = new THREE.Color('#3bb0ff');
+            const colorB = new THREE.Color('#00e676');
+            for (let i = 0; i < nodeCount; i++) {
+                for (let j = i + 1; j < nodeCount; j++) {
+                    if (networkNodes[i].distanceTo(networkNodes[j]) < 4) {
+                        positions.push(networkNodes[i].x, networkNodes[i].y, networkNodes[i].z);
+                        positions.push(networkNodes[j].x, networkNodes[j].y, networkNodes[j].z);
+                        colorA.lerp(colorB, Math.random());
+                        colors.push(colorA.r, colorA.g, colorA.b);
+                        colors.push(colorA.r, colorA.g, colorA.b);
+                    }
+                }
+            }
+            lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            lineGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            const lineMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.6 });
+            networkGroup.add(new THREE.LineSegments(lineGeo, lineMat));
+            scene.add(networkGroup);
+        }
+
+        function setupLighting() {
+            scene.add(new THREE.AmbientLight(0xffffff, 0.1));
+            const pointLight1 = new THREE.PointLight(new THREE.Color('#00bfff'), 1.5, 100);
+            pointLight1.position.set(5, 5, 5); scene.add(pointLight1);
+            const pointLight2 = new THREE.PointLight(new THREE.Color('#ffab00'), 1.5, 100);
+            pointLight2.position.set(-5, -5, -5); scene.add(pointLight2);
+        }
+
+        function addParticles() {
+            const particleCount = 5000;
+            const geo = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 100; positions[i+1] = (Math.random() - 0.5) * 100; positions[i+2] = (Math.random() - 0.5) * 100;
+            }
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.08, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending });
+            scene.add(new THREE.Points(geo, mat));
+        }
+
+        // AUDIO
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                ambientGainNode = audioContext.createGain();
+                ambientGainNode.connect(audioContext.destination);
+                ambientGainNode.gain.setValueAtTime(0.01, audioContext.currentTime);
+
+                chakraOscillators = CHAKRA_FREQUENCIES.map(chakra => {
+                    const osc = audioContext.createOscillator();
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(chakra.freq, audioContext.currentTime);
+                    osc.connect(ambientGainNode); osc.start(); return osc;
+                });
+                document.addEventListener('click', () => { if (audioContext.state === 'suspended') audioContext.resume(); }, { once: true });
+            } catch (e) { console.warn('Audio init failed:', e); }
+        }
+        function getInteractionTone(preference) {
+            const tones = {
+                Chakra: 528, // Solar Plexus, for manifestation
+                Digital: 1200,
+                Ethereal: 250
+            };
+            return tones[preference] || tones.Chakra;
+        }
+        function playInteractionSound(frequency) {
+            if (!audioContext) return;
+            const source = audioContext.createOscillator();
+            source.type = 'sine';
+            source.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            const gain = audioContext.createGain();
+            gain.gain.setValueAtTime(0.5, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1.5);
+            source.connect(gain);
+            gain.connect(audioContext.destination);
+            source.start();
+            source.stop(audioContext.currentTime + 1.5);
+        }
+
+        // EVENT LISTENERS AND UI LOGIC
+        function setupEventListeners() {
+            document.getElementById('processBtn').addEventListener('click', processAxiom);
+            document.getElementById('restartBtn').addEventListener('click', restartSession);
+            document.getElementById('humanInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.ctrlKey) processAxiom(); });
+        }
+        async function processAxiom() {
+            const input = document.getElementById('humanInput').value.trim();
+            if (!input) return;
+            const tonePref = document.getElementById('interactionTone').value;
+            playInteractionSound(getInteractionTone(tonePref));
+            document.getElementById('status').textContent = 'Processing...';
+            try {
+                const result = await ufc.processRequest(input);
+                log.unshift(result); updateSessionLog();
+                document.getElementById('humanInput').value = '';
+                const newResonance = result.finalResonance;
+                ambientGainNode.gain.linearRampToValueAtTime(0.01 + (newResonance / 100) * 0.05, audioContext.currentTime + 1);
+                document.getElementById('status').textContent = 'Active';
+            } catch (error) { document.getElementById('status').textContent = 'Error'; }
+        }
+        function restartSession() {
+            ufc.restartSession(); log = []; expandedLog = null;
+            document.getElementById('sessionCount').textContent = '0';
+            document.getElementById('resonanceAvg').textContent = '0%';
+            document.getElementById('resonanceFill').style.width = '50%';
+            document.getElementById('resonanceText').textContent = 'Awaiting collaborative input';
+            document.getElementById('humanInput').value = '';
+            document.getElementById('sessionLog').innerHTML = '';
+        }
+        function updateSessionLog() {
+            const logContainer = document.getElementById('sessionLog'); logContainer.innerHTML = '';
+            log.forEach((entry, index) => {
+                const logEntry = document.createElement('div'); logEntry.className = 'log-entry'; logEntry.onclick = () => toggleLogDetails(index);
+                logEntry.innerHTML = `<div class="log-timestamp">${new Date(entry.timestamp).toLocaleTimeString()}</div><div class="log-content">${entry.humanInput.substring(0, 50)}...</div>`;
+                if (expandedLog === index) {
+                    logEntry.innerHTML += `<div class="log-details"><p><strong>Human Axiom:</strong> ${entry.humanInput}</p><p><strong>AI Response:</strong> ${entry.aiResponse}</p><p><strong>Resonance:</strong> ${entry.finalResonance.toFixed(2)}%</p><p><strong>Axiom Shift:</strong> ${entry.axiomShift}</p></div>`;
+                }
+                logContainer.appendChild(logEntry);
+            });
+        }
+        function toggleLogDetails(index) { expandedLog = expandedLog === index ? null : index; updateSessionLog(); }
+        function setSuggestion(text) { document.getElementById('humanInput').value = text; }
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = Date.now() * 0.001;
+            const metrics = ufc.getNetworkMetrics();
+            if (centralOrb) {
+                centralOrb.rotation.y += 0.005; centralOrb.rotation.x += 0.001;
+                const pulse = 0.1 * Math.sin(time * 2) + (metrics.resonanceAvg / 100) * 0.2;
+                centralOrb.scale.setScalar(1 + pulse);
+                centralOrb.children.forEach(child => {
+                    if (child.material && child.material.uniforms && child.material.uniforms.viewVector) {
+                        child.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, child.position);
+                    }
+                });
+            }
+            freeloadingNodes.forEach((node, index) => {
+                node.position.x += Math.sin(time * (0.5 + Math.random() * 0.5) + index) * 0.01;
+                node.position.y += Math.cos(time * (0.5 + Math.random() * 0.5) + index) * 0.01;
+                node.position.z += Math.sin(time * (0.5 + Math.random() * 0.5) + index) * 0.01;
+                node.material.emissiveIntensity = 1.5 + 0.5 * Math.sin(time * 5 + index);
+            });
+            document.getElementById('sessionCount').textContent = metrics.totalProcessed;
+            document.getElementById('resonanceAvg').textContent = metrics.resonanceAvg.toFixed(1) + '%';
+            document.getElementById('resonanceFill').style.width = metrics.resonanceAvg.toFixed(1) + '%';
+            document.getElementById('resonanceText').textContent = metrics.resonanceStatus;
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
