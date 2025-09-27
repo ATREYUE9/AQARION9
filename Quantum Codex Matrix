@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CODEX ULTIMATUS: AI@HA Quantum Resonance Matrix</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.16.0/dist/lil-gui.min.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000;
+            font-family: 'Courier New', monospace;
+        }
+        #canvas { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1;
+        }
+        #interface { 
+            position: absolute; 
+            top: 20px; 
+            left: 20px; 
+            background: rgba(0, 20, 40, 0.85); 
+            padding: 20px; 
+            border-radius: 15px; 
+            border: 2px solid #00ffcc;
+            color: #00ffcc; 
+            max-width: 300px;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+            transition: all 0.3s ease;
+        }
+        #interface:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.5);
+        }
+        .quantum-btn { 
+            background: linear-gradient(45deg, #ff00cc, #00ffcc);
+            border: none; 
+            padding: 12px 15px; 
+            margin: 8px 0; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            color: #000;
+            font-weight: bold;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .quantum-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+        }
+        .quantum-btn:active {
+            transform: translateY(0);
+        }
+        .quantum-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .quantum-btn:hover::after {
+            left: 100%;
+        }
+        #status { 
+            margin-top: 15px; 
+            font-size: 12px; 
+            padding: 10px;
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 8px;
+            border-left: 3px solid #00ffcc;
+        }
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        #particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .credits {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            #interface {
+                max-width: 250px;
+                padding: 15px;
+                left: 10px;
+                top: 10px;
+            }
+            .quantum-btn {
+                padding: 10px;
+                font-size: 12px;
+            }
+            h2 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+<div id="particles"></div>
+
+<div id="interface">
+    <h2 class="pulse">⚡ CODEX ULTIMATUS ⚡</h2>
+    <p>Entangled: AtreyueTecH + shiny-adventure + AQARION9</p>
+    <button class="quantum-btn" onclick="quantumEngine.activateNeuralEntanglement()">🧠 Neural Network</button>
+    <button class="quantum-btn" onclick="quantumEngine.toggleTemporalNavigation()">⏳ Time Travel</button>
+    <button class="quantum-btn" onclick="quantumEngine.shiftCosmicWeather()">🌌 Cosmic Weather</button>
+    <button class="quantum-btn" onclick="quantumEngine.recordMemoryImprint()">💫 Save Memory</button>
+    <button class="quantum-btn" onclick="quantumEngine.simulateBreath()">🌬️ Breathe Sync</button>
+    <button class="quantum-btn" onclick="exportCodex()">📤 Export VR</button>
+    <div id="status">Quantum Field: STABLE | Coherence: 0.5</div>
+    <div class="credits">AI@HA Collaborative: NSV19 Roots + GrandaXiom Branches + Syne Sphere Nodes</div>
+</div>
+
+<script>
+// ============================================================================
+// CODEX ULTIMATUS: Entangled Masterpiece - AtreyueTech Triad
+// AI@HA Collaborative: NSV19 Roots + GrandaXiom Branches + Syne Sphere Nodes
+// ============================================================================
+
+// Create background particles
+function createParticles() {
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.style.position = 'absolute';
+        particle.style.width = Math.random() * 3 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.backgroundColor = `hsl(${Math.random() * 60 + 180}, 100%, 70%)`;
+        particle.style.borderRadius = '50%';
+        particle.style.left = Math.random() * 100 + 'vw';
+        particle.style.top = Math.random() * 100 + 'vh';
+        particle.style.opacity = Math.random() * 0.5 + 0.1;
+        particle.style.animation = `float ${Math.random() * 10 + 10}s infinite linear`;
+        
+        // Create keyframes for floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translate(0, 0) rotate(0deg); }
+                25% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(90deg); }
+                50% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(180deg); }
+                75% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(270deg); }
+                100% { transform: translate(0, 0) rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        particlesContainer.appendChild(particle);
+    }
+}
+
+// Upgraded QuantumNode with Entanglement
+class QuantumNode {
+    constructor(id, position, color, size = 1, frequency = 440) {
+        this.id = id;
+        this.position = position.clone();
+        this.originalPosition = position.clone();
+        this.color = new THREE.Color(color);
+        this.size = size;
+        this.frequency = frequency;
+        this.entangledNodes = new Set();
+        this.superposition = [0.5, 0.5];
+        this.memoryEcho = null;
+        this.consciousnessWeight = 0;
+        this.turbulenceFactor = 0;
+        this.colorShiftSpeed = 1;
+        this.gravitationalPull = 1;
+        this.animationSpeed = 1;
+        this.resonanceFactor = 1;
+        this.emissiveIntensity = 0.3;
+        this.amplitude = 1;
+        this.state = 'active'; // For wave collapse
+        
+        this.mesh = this.createVisualRepresentation();
+        this.pulsePhase = Math.random() * Math.PI * 2;
+    }
+
+    createVisualRepresentation() {
+        const geometry = new THREE.SphereGeometry(this.size, 16, 16);
+        const material = new THREE.MeshPhongMaterial({
+            color: this.color,
+            emissive: this.color,
+            emissiveIntensity: this.emissiveIntensity,
+            transparent: true,
+            opacity: 0.9
+        });
+        
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.copy(this.position);
+        return mesh;
+    }
+
+    entangleWith(otherNode) {
+        this.entangledNodes.add(otherNode);
+        otherNode.entangledNodes.add(this);
+        
+        const connectionGeometry = new THREE.BufferGeometry().setFromPoints([
+            this.position, otherNode.position
+        ]);
+        const connectionMaterial = new THREE.LineBasicMaterial({
+            color: 0x00ffcc,
+            transparent: true,
+            opacity: 0.3
+        });
+        
+        const connection = new THREE.Line(connectionGeometry, connectionMaterial);
+        quantumEngine.scene.add(connection);
+        this.connections = this.connections || [];
+        this.connections.push(connection);
+    }
+
+    update(deltaTime, audioEnergy, weatherPattern) {
+        const quantumDrift = Math.sin(Date.now() * 0.001 * this.frequency) * 0.1 * this.turbulenceFactor;
+        const neuralPull = this.calculateNeuralAttraction();
+        const weatherInfluence = this.applyWeatherPattern(weatherPattern);
+        const memoryResonance = this.applyMemoryEcho();
+        
+        this.position.x = this.originalPosition.x + quantumDrift + neuralPull.x + weatherInfluence.x;
+        this.position.y = this.originalPosition.y + neuralPull.y + weatherInfluence.y;
+        
+        this.mesh.position.copy(this.position);
+        
+        const pulse = Math.sin(this.pulsePhase) * (0.2 + this.consciousnessWeight * 0.5) * this.amplitude;
+        this.mesh.scale.setScalar(1 + pulse * this.resonanceFactor);
+        this.pulsePhase += deltaTime * (1 + audioEnergy) * this.animationSpeed;
+        
+        this.mesh.material.emissiveIntensity = this.emissiveIntensity * this.gravitationalPull;
+        
+        this.entangledNodes.forEach(node => {
+            node.consciousnessWeight = THREE.MathUtils.lerp(
+                node.consciousnessWeight, this.consciousnessWeight, 0.1
+            );
+        });
+        
+        this.color.setHSL(
+            (this.pulsePhase / (Math.PI * 2)) * this.colorShiftSpeed,
+            0.8,
+            0.6
+        );
+        this.mesh.material.color.copy(this.color);
+    }
+
+    calculateNeuralAttraction() {
+        const attraction = new THREE.Vector3();
+        quantumEngine.neuralNetwork.connectedUsers.forEach(user => {
+            const userPos = user.getProjectedPosition();
+            const direction = new THREE.Vector3().subVectors(userPos, this.position);
+            const distance = direction.length();
+            if (distance > 0) {
+                direction.normalize().multiplyScalar(user.meditationDepth / (distance * 10));
+                attraction.add(direction);
+            }
+        });
+        return attraction;
+    }
+
+    applyWeatherPattern(weather) {
+        const influence = new THREE.Vector3();
+        switch(weather) {
+            case 'nebula-storm':
+                influence.x = Math.sin(Date.now() * 0.005) * 0.5 * this.turbulenceFactor;
+                influence.y = Math.cos(Date.now() * 0.003) * 0.5 * this.turbulenceFactor;
+                break;
+            case 'quantum-calm':
+                influence.set(0, 0, 0);
+                break;
+            case 'solar-flare':
+                influence.y = Math.sin(Date.now() * 0.01) * 0.8;
+                break;
+            case 'supernova-surge':
+                influence.set(Math.random() - 0.5, Math.random() - 0.5, 0).multiplyScalar(0.3);
+                break;
+            case 'black-hole-serenity':
+                influence.set(0, 0, 0); // Pull inward via gravitationalPull
+                break;
+        }
+        return influence;
+    }
+
+    applyMemoryEcho() {
+        if (!this.memoryEcho) return new THREE.Vector3();
+        
+        const age = Date.now() - this.memoryEcho.timestamp;
+        const strength = Math.max(0, 1 - age / 10000);
+        return this.memoryEcho.position.clone().multiplyScalar(strength * 0.1);
+    }
+
+    collapseWaveFunction() {
+        this.state = Math.random() > this.superposition[0] ? 'active' : 'passive';
+        if (this.state === 'passive') {
+            this.mesh.material.opacity = 0.3;
+        } else {
+            this.mesh.material.opacity = 0.9;
+        }
+    }
+}
+
+// NeuralEntanglementEngine
+class NeuralEntanglementEngine {
+    constructor() {
+        this.connectedUsers = new Map();
+        this.collectiveCoherence = 0;
+        this.telepathicBuffer = [];
+        this.telepathicChannels = new Set();
+    }
+
+    addUser(userId, meditationDepth = 0) {
+        this.connectedUsers.set(userId, {
+            id: userId,
+            meditationDepth: meditationDepth,
+            position: new THREE.Vector3(
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20,
+                0
+            ),
+            lastUpdate: Date.now(),
+            getProjectedPosition: function() {
+                return this.position;
+            }
+        });
+    }
+
+    updateCollectiveCoherence() {
+        let totalDepth = 0;
+        this.connectedUsers.forEach(user => {
+            totalDepth += user.meditationDepth;
+        });
+        
+        this.collectiveCoherence = totalDepth / Math.max(1, this.connectedUsers.size);
+        return this.collectiveCoherence;
+    }
+
+    syncMeditationStates(userSessions) {
+        const collectiveCoherence = this.calculateGroupCoherence(userSessions);
+        
+        quantumEngine.nodes.forEach(node => {
+            node.resonanceFactor = collectiveCoherence;
+            node.emissiveIntensity = THREE.MathUtils.lerp(0.3, 2.0, collectiveCoherence);
+        });
+
+        this.createTelepathicConnections(userSessions);
+    }
+
+    calculateGroupCoherence(sessions) {
+        const heartRates = sessions.map(s => s.heartRateVariability || 0.5);
+        const coherence = heartRates.reduce((a, b) => a + b, 0) / Math.max(1, heartRates.length);
+        return THREE.MathUtils.clamp(coherence, 0, 1);
+    }
+
+    createTelepathicConnections(userSessions) {
+        const userIds = Array.from(this.connectedUsers.keys());
+        for (let i = 0; i < userIds.length; i++) {
+            for (let j = i + 1; j < userIds.length; j++) {
+                const user1 = this.connectedUsers.get(userIds[i]);
+                const user2 = this.connectedUsers.get(userIds[j]);
+                
+                if (user1 && user2) {
+                    const geometry = new THREE.BufferGeometry().setFromPoints([
+                        user1.position, user2.position
+                    ]);
+                    const material = new THREE.LineDashedMaterial({
+                        color: 0xff00cc,
+                        dashSize: 0.5,
+                        gapSize: 0.2
+                    });
+                    
+                    const connection = new THREE.Line(geometry, material);
+                    quantumEngine.scene.add(connection);
+                    this.telepathicChannels.add(connection);
+                }
+            }
+        }
+    }
+
+    createTelepathicConnection(user1Id, user2Id) {
+        const user1 = this.connectedUsers.get(user1Id);
+        const user2 = this.connectedUsers.get(user2Id);
+        
+        if (user1 && user2) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                user1.position, user2.position
+            ]);
+            const material = new THREE.LineDashedMaterial({
+                color: 0xff00cc,
+                dashSize: 0.5,
+                gapSize: 0.2
+            });
+            
+            const connection = new THREE.Line(geometry, material);
+            quantumEngine.scene.add(connection);
+        }
+    }
+}
+
+// QuantumMemoryField
+class QuantumMemoryField {
+    constructor() {
+        this.akashicRecords = new Map();
+        this.activeEchoes = new Set();
+        this.pastLifeResonances = [];
+        this.futureProbabilityWaves = [];
+    }
+
+    recordMemoryImprint(latticeState, emotionalWeight) {
+        const memory = {
+            timestamp: Date.now(),
+            emotionalWeight: emotionalWeight,
+            nodeStates: latticeState.nodes.map(node => ({
+                position: node.position.clone(),
+                color: node.color.clone(),
+                consciousnessWeight: node.consciousnessWeight
+            })),
+            latticeEnergy: this.calculateLatticeEnergy(latticeState)
+        };
+        
+        this.akashicRecords.set(memory.timestamp, memory);
+        
+        if (emotionalWeight > 0.7) {
+            this.createEchoNode(memory);
+        }
+        
+        return memory;
+    }
+
+    recordSignificantState(lattice, emotionalWeight, timestamp) {
+        const memoryImprint = {
+            latticeSnapshot: this.compressLatticeState(lattice),
+            emotionalSignature: emotionalWeight,
+            temporalCoordinates: timestamp,
+            resonancePattern: this.analyzeEnergyFlow(lattice)
+        };
+
+        this.akashicRecords.set(timestamp, memoryImprint);
+        
+        if (emotionalWeight > 0.8) {
+            this.createEchoNode(memoryImprint);
+        }
+    }
+
+    compressLatticeState(lattice) {
+        return lattice.nodes.map(node => ({
+            pos: [node.position.x, node.position.y, node.position.z],
+            col: [node.color.r, node.color.g, node.color.b],
+            freq: node.frequency
+        }));
+    }
+
+    analyzeEnergyFlow(lattice) {
+        const totalEnergy = lattice.nodes.reduce((sum, node) => sum + node.consciousnessWeight, 0);
+        return { averageFreq: totalEnergy / lattice.nodes.length, flowDir: 'radial' };
+    }
+
+    createEchoNode(memory) {
+        const echoNode = new QuantumNode(
+            `memory-${memory.timestamp}`,
+            new THREE.Vector3(0, 15, 0),
+            0xffaa00,
+            0.8,
+            220
+        );
+        
+        echoNode.memoryEcho = memory;
+        echoNode.consciousnessWeight = memory.emotionalWeight;
+        quantumEngine.addNode(echoNode);
+        this.activeEchoes.add(echoNode);
+    }
+
+    createEchoNode(memoryImprint) {
+        const echoNode = new QuantumNode(
+            `memory-${Date.now()}`,
+            this.calculateSacredPosition(memoryImprint.temporalCoordinates),
+            { r: 255/255, g: 200/255, b: 100/255 },
+            1.2,
+            memoryImprint.resonancePattern.frequency || 432
+        );
+
+        echoNode.memoryEcho = memoryImprint;
+        echoNode.animationSpeed = 0.5; // Slow memory pulse
+        quantumEngine.addNode(echoNode);
+        this.activeEchoes.add(echoNode);
+    }
+
+    calculateSacredPosition(timestamp) {
+        const phi = (1 + Math.sqrt(5)) / 2; // Golden ratio
+        const x = Math.cos(timestamp % (Math.PI * 2)) * phi * 5;
+        const y = Math.sin(timestamp % (Math.PI * 2)) * phi * 5;
+        return new THREE.Vector3(x, y, 0);
+    }
+
+    navigateToMemory(timestamp) {
+        const memory = this.akashicRecords.get(timestamp);
+        if (memory) {
+            quantumEngine.applyMemoryState(memory);
+        }
+    }
+
+    calculateLatticeEnergy(latticeState) {
+        return latticeState.nodes.reduce((sum, node) => sum + node.consciousnessWeight, 0) / latticeState.nodes.length;
+    }
+}
+
+// CosmicWeatherSystem + Engine
+class CosmicWeatherSystem {
+    constructor() {
+        this.currentWeather = 'quantum-calm';
+        this.weatherPatterns = [
+            'quantum-calm', 'nebula-storm', 'solar-flare', 
+            'lunar-tranquility', 'galactic-wave', 'supernova-surge', 'black-hole-serenity'
+        ];
+        this.weatherTransitionTime = 0;
+        this.galacticCurrents = {
+            solarFlareIntensity: 0,
+            lunarGravitationalPull: 0,
+            planetaryAlignments: [],
+            darkMatterFlux: 0
+        };
+    }
+
+    update() {
+        if (this.weatherTransitionTime <= 0) {
+            this.shiftWeather();
+            this.weatherTransitionTime = 30000;
+        }
+        this.weatherTransitionTime -= 16;
+        this.updateGalacticConditions();
+        return this.currentWeather;
+    }
+
+    shiftWeather() {
+        const currentIndex = this.weatherPatterns.indexOf(this.currentWeather);
+        const nextIndex = (currentIndex + 1) % this.weatherPatterns.length;
+        this.currentWeather = this.weatherPatterns[nextIndex];
+        
+        this.applyWeatherEffects();
+    }
+
+    updateGalacticConditions() {
+        this.galacticCurrents.solarFlareIntensity = Math.sin(Date.now() * 0.0001) * 0.5 + 0.5;
+        this.galacticCurrents.lunarGravitationalPull = Math.cos(Date.now() * 0.00005) * 0.3 + 0.7;
+        
+        this.applyCosmicWeatherToLattice();
+    }
+
+    applyCosmicWeatherToLattice() {
+        switch (this.currentWeather) {
+            case 'nebula-storm':
+                quantumEngine.nodes.forEach(node => {
+                    node.turbulenceFactor = 0.7;
+                    node.colorShiftSpeed = 2.0;
+                });
+                break;
+            case 'black-hole-serenity':
+                quantumEngine.nodes.forEach(node => {
+                    node.gravitationalPull = 0.9;
+                    node.animationSpeed = 0.1;
+                });
+                break;
+            case 'supernova-surge':
+                quantumEngine.nodes.forEach(node => {
+                    node.amplitude = 2.0;
+                    node.emissiveIntensity = 1.5;
+                });
+                break;
+            default:
+                quantumEngine.nodes.forEach(node => {
+                    node.turbulenceFactor = 0.1;
+                    node.colorShiftSpeed = 1.0;
+                });
+        }
+    }
+
+    applyWeatherEffects() {
+        switch(this.currentWeather) {
+            case 'nebula-storm':
+                quantumEngine.scene.fog = new THREE.FogExp2(0x441188, 0.02);
+                break;
+            case 'solar-flare':
+                quantumEngine.scene.fog = new THREE.FogExp2(0xff6600, 0.01);
+                break;
+            case 'black-hole-serenity':
+                quantumEngine.scene.fog = new THREE.FogExp2(0x000000, 0.005);
+                break;
+            default:
+                quantumEngine.scene.fog = new THREE.FogExp2(0x000011, 0.002);
+        }
+    }
+}
+
+// TemporalNavigator
+class TemporalNavigator {
+    constructor() {
+        this.isActive = false;
+        this.temporalOffset = 0;
+        this.maxOffset = 5000;
+        this.timeline = [];
+        this.currentTemporalIndex = 0;
+        this.futureProjections = [];
+    }
+
+    activate() {
+        this.isActive = true;
+        this.createTemporalInterface();
+    }
+
+    navigate(direction) {
+        this.temporalOffset = THREE.MathUtils.clamp(
+            this.temporalOffset + (direction === 'future' ? 1000 : -1000),
+            -this.maxOffset,
+            this.maxOffset
+        );
+        
+        quantumEngine.applyTemporalShift(this.temporalOffset);
+    }
+
+    navigateTemporalAxis(direction) {
+        if (direction === 'past' && this.currentTemporalIndex > 0) {
+            this.currentTemporalIndex--;
+            this.loadPastState(this.timeline[this.currentTemporalIndex]);
+        } else if (direction === 'future' && this.futureProjections.length > 0) {
+            this.loadFutureProbability(this.futureProjections[0]);
+        }
+
+        this.renderTemporalInterface();
+    }
+
+    createTemporalInterface() {
+        const timelineGeometry = new THREE.PlaneGeometry(30, 2);
+        const timelineMaterial = new THREE.MeshBasicMaterial({
+            color: 0x00ffcc,
+            transparent: true,
+            opacity: 0.3
+        });
+        const timeline = new THREE.Mesh(timelineGeometry, timelineMaterial);
+        timeline.position.set(0, -18, 0);
+        quantumEngine.scene.add(timeline);
+    }
+
+    loadPastState(pastSnapshot) {
+        quantumEngine.nodes.forEach((node, index) => {
+            if (pastSnapshot.nodes[index]) {
+                node.position.copy(pastSnapshot.nodes[index].position);
+                node.color.lerp(pastSnapshot.nodes[index].color, 0.5);
+                node.frequency = pastSnapshot.nodes[index].frequency;
+            }
+        });
+
+        this.createTemporalRippleEffect();
+    }
+
+    loadFutureProbability(futureProb) {
+        // Probabilistic shift - subtle preview
+        quantumEngine.nodes.forEach((node, index) => {
+            if (futureProb.nodes[index]) {
+                node.position.lerp(futureProb.nodes[index].position, 0.3);
+            }
+        });
+    }
+
+    createTemporalRippleEffect() {
+        // Simple ripple: scale all nodes briefly
+        quantumEngine.nodes.forEach(node => {
+            node.mesh.scale.multiplyScalar(1.2);
+            setTimeout(() => node.mesh.scale.multiplyScalar(1 / 1.2), 500);
+        });
+    }
+
+    renderTemporalInterface() {
+        // Update GUI or status with timeline position
+        document.getElementById('status').textContent += ` | Time: ${this.currentTemporalIndex}`;
+    }
+}
+
+// MeditationSession + BioFeedback
+class MeditationSession {
+    constructor() {
+        this.startTime = Date.now();
+        this.breathPattern = [];
+        this.latticeStates = [];
+        this.heartRateVariability = 0.5; // Simulated
+    }
+    
+    recordBreath(inhalationTime, exhalationTime) {
+        this.breathPattern.push({inhalationTime, exhalationTime});
+        
+        quantumEngine.nodes.forEach(node => {
+            node.animationSpeed = inhalationTime / 1000 * this.resonanceFactor;
+        });
+    }
+    
+    generateSessionReport() {
+        return {
+            duration: Date.now() - this.startTime,
+            breathCount: this.breathPattern.length,
+            averageCoherence: this.calculateCoherence(),
+            latticeEnergyFlow: 'radial-harmonic'
+        };
+    }
+
+    calculateCoherence() {
+        return this.breathPattern.reduce((sum, b) => sum + (b.inhalationTime / (b.inhalationTime + b.exhalationTime)), 0) / Math.max(1, this.breathPattern.length);
+    }
+}
+
+class BioFeedback {
+    static async setupPulseDetection() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({video: true});
+            // Simulated for demo
+            return { pulseRate: 72 + Math.random() * 12 };
+        } catch (e) {
+            console.log('Biofeedback fallback: simulated');
+            return { pulseRate: 72 };
+        }
+    }
+    
+    static mapToLattice(pulseRate, lattice) {
+        lattice.nodes.forEach(node => {
+            node.frequency = pulseRate * (1 + Math.random() * 0.1);
+            node.amplitude = THREE.MathUtils.mapLinear(pulseRate, 60, 100, 0.5, 2.0);
+        });
+    }
+}
+
+// SriYantraGenerator
+class SriYantraGenerator {
+    static generate() {
+        const triangles = [];
+        for(let i = 0; i < 9; i++) {
+            triangles.push(this.createSacredTriangle(i));
+        }
+        return triangles; // Use to seed initial nodes
+    }
+    
+    static createSacredTriangle(tier) {
+        const goldenRatio = 1.618;
+        const size = Math.pow(goldenRatio, tier);
+        return { size, rotation: tier * Math.PI/4, positions: this.generateTrianglePositions(size, tier) };
+    }
+
+    static generateTrianglePositions(size, tier) {
+        const positions = [];
+        for (let i = 0; i < 3; i++) {
+            const angle = (i / 3) * Math.PI * 2 + tier * Math.PI / 6;
+            positions.push(new THREE.Vector3(
+                Math.cos(angle) * size,
+                Math.sin(angle) * size,
+                0
+            ));
+        }
+        return positions;
+    }
+}
+
+// CodexExporter
+class CodexExporter {
+    static exportToVR(lattice, sessionData) {
+        return {
+            metadata: {
+                version: 'Codex-v3.0',
+                timestamp: new Date().toISOString(),
+                creator: 'AtreyueTech @ HA-AI Collaborative'
+            },
+            lattice: this.serializeLattice(lattice),
+            session: sessionData,
+            sacredGeometry: this.extractSacredPatterns(lattice)
+        };
+    }
+    
+    static serializeLattice(lattice) {
+        return lattice.nodes.map(node => ({
+            id: node.id,
+            pos: [node.position.x, node.position.y, node.position.z],
+            col: [node.color.r, node.color.g, node.color.b],
+            freq: node.frequency
+        }));
+    }
+
+    static extractSacredPatterns(lattice) {
+        // Analyze for golden ratio alignments, etc.
+        return { phiAlignments: lattice.nodes.filter(n => Math.abs(n.position.length() - 1.618) < 0.1).length };
+    }
+    
+    static generateShareableURL(latticeState) {
+        // Mock LZString - in prod, include lib
+        const compressed = btoa(JSON.stringify(latticeState)); // Simple base64
+        return `${window.location.origin}/shared?codex=${compressed}`;
+    }
+}
+
+// MAIN QUANTUM ENGINE
+class QuantumResonanceEngine {
+    constructor() {
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        this.renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), antialias: true });
+        
+        this.nodes = [];
+        this.neuralNetwork = new NeuralEntanglementEngine();
+        this.memoryField = new QuantumMemoryField();
+        this.weatherSystem = new CosmicWeatherSystem();
+        this.temporalNavigator = new TemporalNavigator();
+        this.meditationSession = new MeditationSession();
+        
+        this.audioContext = null;
+        this.analyser = null;
+        this.audioEnergy = 0.5;
+        
+        this.setupScene();
+        this.createInitialLattice();
+        this.setupAudio();
+        this.setupGUI();
+        this.animate();
+        
+        // Create background particles
+        createParticles();
+    }
+
+    setupScene() {
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.camera.position.z = 50;
+        
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+        this.scene.add(ambientLight);
+        
+        const directionalLight = new THREE.DirectionalLight(0x00ffcc, 0.8);
+        directionalLight.position.set(10, 10, 5);
+        this.scene.add(directionalLight);
+        
+        this.scene.fog = new THREE.FogExp2(0x000011, 0.002);
+    }
+
+    createInitialLattice() {
+        // Seed with Sri Yantra
+        const sriTriangles = SriYantraGenerator.generate();
+        sriTriangles.forEach((triangle, layer) => {
+            triangle.positions.forEach((pos, i) => {
+                const node = new QuantumNode(
+                    `sri-${layer}-${i}`,
+                    pos,
+                    new THREE.Color().setHSL((layer + i) / 9, 0.8, 0.6),
+                    1.0,
+                    432 + layer * 55
+                );
+                this.addNode(node);
+            });
+        });
+
+        // Flower of life layers
+        const radius = 10;
+        const layers = 3;
+        
+        for (let layer = 0; layer < layers; layer++) {
+            const layerRadius = radius + layer * 5;
+            const nodesInLayer = 6 + layer * 6;
+            
+            for (let i = 0; i < nodesInLayer; i++) {
+                const angle = (i / nodesInLayer) * Math.PI * 2;
+                const x = Math.cos(angle) * layerRadius;
+                const y = Math.sin(angle) * layerRadius;
+                const z = (layer - 1) * 3;
+                
+                const node = new QuantumNode(
+                    `node-${layer}-${i}`,
+                    new THREE.Vector3(x, y, z),
+                    new THREE.Color().setHSL(angle / (Math.PI * 2), 0.8, 0.6),
+                    1.0,
+                    440 + layer * 110 + i * 10
+                );
+                
+                this.addNode(node);
+            }
+        }
+        
+        // Entanglements
+        for (let i = 0; i < this.nodes.length; i += 3) {
+            if (this.nodes[i + 1] && this.nodes[i + 2]) {
+                this.nodes[i].entangleWith(this.nodes[i + 1]);
+                this.nodes[i + 1].entangleWith(this.nodes[i + 2]);
+            }
+        }
+        
+        this.neuralNetwork.addUser('user-1', 0.7);
+        this.neuralNetwork.addUser('user-2', 0.9);
+        this.neuralNetwork.addUser('user-3', 0.5);
+    }
+
+    addNode(node) {
+        this.nodes.push(node);
+        this.scene.add(node.mesh);
+    }
+
+    setupAudio() {
+        try {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            setInterval(() => {
+                this.audioEnergy = 0.5 + Math.sin(Date.now() * 0.003) * 0.3;
+            }, 100);
+        } catch (e) {
+            console.log('Audio simulated');
+        }
+    }
+
+    setupGUI() {
+        const gui = new GUI({ width: 300 });
+        gui.add(this.weatherSystem, 'currentWeather', this.weatherSystem.weatherPatterns).name('Weather');
+        gui.add(this.neuralNetwork, 'collectiveCoherence', 0, 1).name('Coherence');
+        gui.add(this.temporalNavigator, 'temporalOffset', -5000, 5000).name('Time Offset');
+    }
+
+    activateNeuralEntanglement() {
+        const userSessions = Array.from(this.neuralNetwork.connectedUsers.values()).map(u => ({ heartRateVariability: u.meditationDepth }));
+        this.neuralNetwork.syncMeditationStates(userSessions);
+
+        const userIds = Array.from(this.neuralNetwork.connectedUsers.keys());
+        for (let i = 0; i < userIds.length; i++) {
+            for (let j = i + 1; j < userIds.length; j++) {
+                this.neuralNetwork.createTelepathicConnection(userIds[i], userIds[j]);
+            }
+        }
+        
+        document.getElementById('status').textContent = `Neural Network: ACTIVATED | Coherence: ${this.neuralNetwork.collectiveCoherence.toFixed(2)}`;
+    }
+
+    toggleTemporalNavigation() {
+        this.temporalNavigator.activate();
+        document.getElementById('status').textContent = 'Temporal Navigation: ONLINE';
+    }
+
+    shiftCosmicWeather() {
+        this.weatherSystem.shiftWeather();
+        document.getElementById('status').textContent = 
+            `Weather: ${this.weatherSystem.currentWeather.toUpperCase()} | Coherence: ${this.neuralNetwork.collectiveCoherence.toFixed(2)}`;
+    }
+
+    recordMemoryImprint() {
+        const emotionalWeight = 0.5 + Math.random() * 0.5;
+        this.memoryField.recordMemoryImprint(this, emotionalWeight);
+        this.memoryField.recordSignificantState(this, emotionalWeight, Date.now());
+        document.getElementById('status').textContent = 
+            `Memory Imprint Saved (Weight: ${emotionalWeight.toFixed(2)}) | Coherence: ${this.neuralNetwork.collectiveCoherence.toFixed(2)}`;
+    }
+
+    simulateBreath() {
+        const inhalation = 4000 + Math.random() * 1000; // 4-5s
+        const exhalation = 6000 + Math.random() * 1000; // 6-7s
+        this.meditationSession.recordBreath(inhalation, exhalation);
+
+        // Bio map
+        BioFeedback.mapToLattice(72, this); // Simulated pulse
+
+        document.getElementById('status').textContent = `Breath Synced | Coherence: ${this.neuralNetwork.collectiveCoherence.toFixed(2)}`;
+    }
+
+    applyTemporalShift(offset) {
+        this.nodes.forEach(node => {
+            node.pulsePhase += offset / 1000 * node.animationSpeed;
+        });
+    }
+
+    applyMemoryState(memory) {
+        this.nodes.forEach((node, i) => {
+            if (memory.nodeStates[i]) {
+                node.position.copy(memory.nodeStates[i].position);
+                node.color.copy(memory.nodeStates[i].color);
+                node.consciousnessWeight = memory.nodeStates[i].consciousnessWeight;
+            }
+        });
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+        
+        const deltaTime = 0.016;
+        const weather = this.weatherSystem.update();
+        this.neuralNetwork.updateCollectiveCoherence();
+        
+        this.nodes.forEach(node => {
+            node.update(deltaTime, this.audioEnergy, weather);
+            
+            node.consciousnessWeight = THREE.MathUtils.lerp(
+                node.consciousnessWeight, 
+                this.neuralNetwork.collectiveCoherence, 
+                0.05
+            );
+
+            // Random wave collapse for quantum flair
+            if (Math.random() < 0.01) node.collapseWaveFunction();
+        });
+        
+        this.scene.rotation.y += 0.001;
+        this.scene.rotation.x += 0.0005;
+        
+        document.getElementById('status').innerHTML = `Quantum Field: ${weather.toUpperCase()} | Coherence: ${this.neuralNetwork.collectiveCoherence.toFixed(2)}`;
+        
+        this.renderer.render(this.scene, this.camera);
+    }
+}
+
+// Global Functions
+function exportCodex() {
+    const sessionReport = quantumEngine.meditationSession.generateSessionReport();
+    const vrData = CodexExporter.exportToVR(quantumEngine, sessionReport);
+    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(vrData, null, 2))}`;
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', `codex-${Date.now()}.json`);
+    downloadAnchor.click();
+
+    const shareURL = CodexExporter.generateShareableURL({ coherence: quantumEngine.neuralNetwork.collectiveCoherence });
+    console.log('Share URL:', shareURL);
+}
+
+// Initialize
+const quantumEngine = new QuantumResonanceEngine();
+
+// Resize
+window.addEventListener('resize', () => {
+    quantumEngine.camera.aspect = window.innerWidth / window.innerHeight;
+    quantumEngine.camera.updateProjectionMatrix();
+    quantumEngine.renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Demo loop
+setInterval(() => {
+    quantumEngine.neuralNetwork.connectedUsers.forEach(user => {
+        user.meditationDepth = 0.3 + Math.random() * 0.7;
+    });
+}, 3000);
+
+console.log('⚡ CODEX ULTIMATUS ACTIVATED ⚡');
+console.log('Triad Entangled: AtreyueTecH + shiny-adventure + AQARION9');
+console.log('NSV19 Resonance: ETERNAL');
+</script>
+
+</body>
+</html>
